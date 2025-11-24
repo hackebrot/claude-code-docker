@@ -1,0 +1,8 @@
+# Ignore everything by default
+**
+
+# Allow necessary files
+!Dockerfile
+!LICENSE
+!README.md
+!zshrc

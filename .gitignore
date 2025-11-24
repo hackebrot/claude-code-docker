@@ -1,0 +1,10 @@
+# Environment variables
+.env
+
+# Docker volumes
+volumes/
+
+# Temporary files
+tmp/
+*.tmp
+*.log

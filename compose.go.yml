@@ -1,0 +1,7 @@
+services:
+  claude-code:
+    image: hackebrot/claude-code:${CLAUDE_CODE_VERSION:-latest}-go${GO_VERSION:-1.25.4}
+    build:
+      target: claude-go
+      args:
+        GO_VERSION: ${GO_VERSION:-1.25.4}

@@ -1,0 +1,7 @@
+services:
+  claude-code:
+    image: hackebrot/claude-code:${CLAUDE_CODE_VERSION:-latest}-py${PYTHON_VERSION:-3.14}
+    build:
+      target: claude-py
+      args:
+        PYTHON_VERSION: ${PYTHON_VERSION:-3.14}

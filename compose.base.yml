@@ -1,0 +1,68 @@
+services:
+  claude-code:
+    image: hackebrot/claude-code:${CLAUDE_CODE_VERSION:-latest}-base
+    pull_policy: never
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: claude-base
+      args:
+        CLAUDE_CODE_VERSION: ${CLAUDE_CODE_VERSION:-latest}
+    container_name: "${COMPOSE_PROJECT_NAME:-claude}-claude-code"
+    hostname: claude-code
+
+    security_opt:
+      - no-new-privileges:true
+
+    # Restrict capabilities
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - SETGID
+      - SETUID
+
+    volumes:
+      - type: bind
+        # Bind to the directory where `docker compose` is run from by default.
+        # You can override by setting WORKSPACE_DIR in the project's environment or .env file.
+        source: "${WORKSPACE_DIR:-${PWD}}"
+        target: "/workspace/${COMPOSE_PROJECT_NAME:-default}"
+        consistency: delegated
+        read_only: false
+
+      # Shared authentication and settings across all Claude Code projects
+      - type: volume
+        source: claude-settings
+        target: /home/claude/.claude
+
+    environment:
+      - TZ=${TZ:-Europe/Berlin}
+      - CLAUDE_CONFIG_DIR=/home/claude/.claude
+
+    networks:
+      - claude-network
+
+    # Run the container as the claude user
+    user: "1001:1001"
+
+    # Update working directory
+    working_dir: "/workspace/${COMPOSE_PROJECT_NAME:-default}"
+
+    # Command to start the shell directly
+    command: "claude"
+
+    # Keep container running
+    tty: true
+    stdin_open: true
+
+volumes:
+  # External volume shared across all Claude Code projects
+  # Create once with: docker volume create claude-settings
+  claude-settings:
+    external: true
+
+networks:
+  claude-network:
+    driver: bridge
+
